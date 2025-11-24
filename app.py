@@ -5,60 +5,61 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import datetime
 
-# --- PAGE CONFIG ---
-st.set_page_config(
-    page_title="BTC Algo Trader",
-    page_icon="📈",
-    layout="wide"
-)
+# -----------------------------
+# BTC ALGO TRADER — FUTURISTIC UI
+# Marketing-forward, technické části jsou dostupné, ale vizuálně upozaděné.
+# -----------------------------
 
-# --- LIGHT MODERN STYLING (simple, inline) ---
-st.markdown(
-    """
-    <style>
-    /* Page background and font */
-    .reportview-container, .main {
-        background: linear-gradient(180deg, #ffffff 0%, #f7f9fb 100%);
-        color: #0f1724;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-    }
-    /* Card like boxes */
-    .card {
-        background: #ffffff;
-        padding: 14px;
-        border-radius: 12px;
-        box-shadow: 0 6px 18px rgba(15, 23, 36, 0.06);
-        border: 1px solid rgba(15,23,36,0.04);
-    }
-    /* Small muted text */
-    .muted { color: #6b7280; font-size: 13px }
-    /* Badge for verdict */
-    .verdict { padding: 8px 14px; border-radius: 999px; font-weight: 700; }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+st.set_page_config(page_title="BTC FUTURE Trader", page_icon="🚀", layout="wide")
 
-# --- HEADER ---
-colh1, colh2 = st.columns([3,1])
-with colh1:
-    st.title("₿ Bitcoin Algorithmic Trader & Analyzer")
-    st.markdown("""
-    **Abstrakt:** Interaktivní a přístupný nástroj pro analýzu BTC. Kombinuje klasické technické indikátory (SMA, RSI, MACD) do jednoho kompozitního skóre a jednoduchého verdiktu.
-    """)
-with colh2:
-    st.markdown("<div style='text-align:right'><small class='muted'>Aktualizováno: {}</small></div>".format(datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')), unsafe_allow_html=True)
+# --- STYLING: futuristický, světlý s neon akcenty ---
+st.markdown("""
+<style>
+:root{ --bg:#0f1724; --card:#0b1220; --muted:#9aa6b2; --accent:#7c3aed; --glass: rgba(255,255,255,0.04);} 
+/* overall */
+body { background: linear-gradient(180deg, #f8fbff 0%, #eef6ff 100%); color: #061126; font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto;}
+/* hero */
+.hero { background: linear-gradient(90deg, rgba(124,58,237,0.08), rgba(59,130,246,0.04)); padding:22px; border-radius:14px; box-shadow: 0 8px 30px rgba(99,102,241,0.08); }
+.h1 { font-size:28px; font-weight:800; margin-bottom:6px }
+.h2 { font-size:14px; color:var(--muted); margin-top:0 }
+/* cards */
+.card { background: white; border-radius:12px; padding:16px; box-shadow: 0 6px 18px rgba(15,23,42,0.04); border: 1px solid rgba(11,22,35,0.04); }
+.metric { font-weight:700; font-size:18px }
+.badge { display:inline-block; padding:8px 12px; border-radius:999px; font-weight:700 }
+/* subtle neon accents */
+.accent { color: var(--accent); }
+.small { color: var(--muted); font-size:13px }
+/* marketing box */
+.pitch { border-radius:12px; padding:14px; background: linear-gradient(180deg, rgba(124,58,237,0.06), rgba(124,58,237,0.02)); }
+</style>
+""", unsafe_allow_html=True)
 
-# --- HELP / VYSVĚTLIVKY (layman-friendly) ---
-with st.expander("❓ Vysvětlivky (rychle, pro laiky)", expanded=False):
-    st.markdown("""
-    - **SMA (Simple Moving Average)** — průměrná cena za posledních N dní. Pomáhá určit, zda je trh v dlouhodobějším vzestupu nebo poklesu.
-    - **RSI (Relative Strength Index)** — ukazatel „přehřátí“ trhu. Hodnoty nad 70 mohou znamenat přehřátí (může následovat korekce), pod 30 znamená možnou „sleva" (přeprodané).
-    - **MACD** — měří tempo změn cen (momentum). Křížení MACD nad signální linkou je býčí signál, pod ní medvědí.
-    - **Kompozitní skóre & verdikt** — jednoduché sčítání signálů: trend (SMA), moment (MACD) a oscilátor (RSI). Výsledek je orientační – není to investiční rada.
-    """)
+# --- HERO / MARKETING FIRST ---
+col1, col2 = st.columns([3,1])
+with col1:
+    st.markdown("<div class='hero'>", unsafe_allow_html=True)
+    st.markdown("<div class='h1'>BTC FUTURE Trader — Predict. Prepare. Profit.</div>", unsafe_allow_html=True)
+    st.markdown("<div class='h2'>Interaktivní zážitek pro obchodníky i nadšence. Rychlé rozhodnutí, moderní vizualizace, jednoduché signály. Ne investiční rada — analytický nástroj.</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("<br>")
+    st.markdown("<div class='pitch card'><strong>Pro koho je to nejlepší:</strong> pro vizuální analytiky, marketingové týmy a aktivní tradery, kteří chtějí rychlé rozhodnutí bez ztráty transparency.</div>", unsafe_allow_html=True)
+with col2:
+    st.markdown("<div class='card' style='text-align:center'>", unsafe_allow_html=True)
+    st.markdown("<div class='small'>Current tech</div>")
+    st.markdown(f"<h3 class='metric accent'>Automatické skórování — SMA · RSI · MACD</h3>", unsafe_allow_html=True)
+    st.markdown("<div class='small' style='margin-top:6px'>Upozaděné odborné indikátory — klikněte na 'Technické' pro podrobnosti.</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
-# --- FUNCTIONS ---
+# --- SIDEBAR SETTINGS (compact) ---
+with st.sidebar:
+    st.header("Start")
+    ticker = st.text_input("Ticker", value="BTC-USD")
+    period = st.selectbox("Rozsah dat", options=['1y','2y','5y'], index=1)
+    st.markdown("<div class='small'>Data: Yahoo Finance · Analýza: SMA/RSI/MACD</div>", unsafe_allow_html=True)
+    if st.button("🔄 Obnovit data"):
+        st.cache_data.clear()
+
+# --- DATA & INDICATORS (nedotčeno) ---
 @st.cache_data
 def load_data(symbol, period):
     try:
@@ -66,181 +67,126 @@ def load_data(symbol, period):
         if isinstance(df.columns, pd.MultiIndex):
             df.columns = df.columns.get_level_values(0)
         return df
-    except Exception as e:
+    except Exception:
         return pd.DataFrame()
 
 
 def calculate_technicals(df):
-    """Vypočítá technické indikátory: SMA_50, SMA_200, RSI(14), MACD(12,26,9)"""
     data = df.copy()
     if data.empty:
         return data
-
     data['SMA_50'] = data['Close'].rolling(window=50).mean()
     data['SMA_200'] = data['Close'].rolling(window=200).mean()
-
     delta = data['Close'].diff()
-    gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
-    loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
+    gain = (delta.where(delta>0,0)).rolling(window=14).mean()
+    loss = (-delta.where(delta<0,0)).rolling(window=14).mean()
     rs = gain / loss
     data['RSI'] = 100 - (100 / (1 + rs))
-
     exp1 = data['Close'].ewm(span=12, adjust=False).mean()
     exp2 = data['Close'].ewm(span=26, adjust=False).mean()
     data['MACD'] = exp1 - exp2
     data['Signal_Line'] = data['MACD'].ewm(span=9, adjust=False).mean()
-
     return data
 
 
 def get_trading_signal(row):
-    """Jednoduchý rozhodovací strom: vrací skóre, verdikt, barvu a důvody (pro zobrazení uživateli)."""
     score = 0
     reasons = []
-
-    # Trend (SMA)
     if pd.notna(row.get('SMA_50')) and pd.notna(row.get('SMA_200')):
         if row['SMA_50'] > row['SMA_200']:
-            score += 1
-            reasons.append("Trend: býčí (SMA 50 > SMA 200)")
+            score += 1; reasons.append('Trend: býčí (SMA 50 > SMA 200)')
         else:
-            score -= 1
-            reasons.append("Trend: medvědí (SMA 50 < SMA 200)")
+            score -= 1; reasons.append('Trend: medvědí (SMA 50 < SMA 200)')
     else:
-        reasons.append("Trend: nedostatek dat pro SMA")
-
-    # RSI
+        reasons.append('Trend: nedostatek dat')
     if pd.notna(row.get('RSI')):
         if row['RSI'] < 30:
-            score += 1
-            reasons.append("RSI: podhodnoceno (<30)")
+            score += 1; reasons.append('RSI: podhodnoceno (<30)')
         elif row['RSI'] > 70:
-            score -= 1
-            reasons.append("RSI: přehřáto (>70)")
+            score -= 1; reasons.append('RSI: přehřáto (>70)')
         else:
-            reasons.append("RSI: neutrální (30-70)")
+            reasons.append('RSI: neutrální (30-70)')
     else:
-        reasons.append("RSI: nedostatek dat")
-
-    # MACD
+        reasons.append('RSI: nedostatek dat')
     if pd.notna(row.get('MACD')) and pd.notna(row.get('Signal_Line')):
         if row['MACD'] > row['Signal_Line']:
-            score += 1
-            reasons.append("MACD: rostoucí momentum (MACD > Signal)")
+            score += 1; reasons.append('MACD: rostoucí momentum')
         else:
-            score -= 1
-            reasons.append("MACD: klesající momentum (MACD < Signal)")
+            score -= 1; reasons.append('MACD: klesající momentum')
     else:
-        reasons.append("MACD: nedostatek dat")
-
+        reasons.append('MACD: nedostatek dat')
     if score >= 2:
-        verdict = "STRONG BUY"
-        color = "#0f9d58"
+        return score, 'STRONG BUY', '#0f9d58', reasons
     elif score == 1:
-        verdict = "BUY"
-        color = "#7bd389"
+        return score, 'BUY', '#7bd389', reasons
     elif score == 0:
-        verdict = "HOLD"
-        color = "#6b7280"
+        return score, 'HOLD', '#6b7280', reasons
     elif score == -1:
-        verdict = "SELL"
-        color = "#f59e0b"
+        return score, 'SELL', '#f59e0b', reasons
     else:
-        verdict = "STRONG SELL"
-        color = "#e02424"
-
-    return score, verdict, color, reasons
+        return score, 'STRONG SELL', '#e02424', reasons
 
 
 def format_currency(v):
-    try:
-        return f"${v:,.2f}"
-    except:
-        return "-"
+    try: return f"${v:,.2f}"
+    except: return '-'
 
-# --- SIDEBAR SETTINGS ---
-with st.sidebar:
-    st.header("⚙️ Nastavení")
-    ticker = st.text_input("Ticker Symbol", value="BTC-USD")
-    period = st.selectbox("Rozsah dat", options=["1y", "2y", "5y"], index=1)
-    st.markdown("<div class='muted'>Data jsou stahována živě z Yahoo Finance. Aplikace slouží pouze pro vzdělávací a analytické účely.</div>", unsafe_allow_html=True)
-    if st.button("🔄 Obnovit data"):
-        st.cache_data.clear()
-
-# --- LOAD + CALC ---
-raw_df = load_data(ticker, period)
-if raw_df.empty:
-    st.error("Nepodařilo se stáhnout data. Zkontrolujte ticker nebo zvolte jiný rozsah.")
+# --- RENDERING ---
+raw = load_data(ticker, period)
+if raw.empty:
+    st.error('Nepodařilo se stáhnout data — zkontrolujte ticker.')
 else:
-    df = calculate_technicals(raw_df)
-    last_row = df.iloc[-1]
-    current_price = last_row['Close']
-    prev_price = df.iloc[-2]['Close'] if len(df) > 1 else current_price
-    price_change = current_price - prev_price
-    pct_change = (price_change / prev_price) * 100 if prev_price != 0 else 0
+    df = calculate_technicals(raw)
+    last = df.iloc[-1]
+    price = last['Close']
+    prev = df.iloc[-2]['Close'] if len(df) > 1 else price
+    pct = (price - prev) / prev * 100 if prev != 0 else 0
+    score, verdict, color, reasons = get_trading_signal(last)
 
-    score, verdict, color, reasons = get_trading_signal(last_row)
-
-    # --- TOP DASHBOARD ---
+    # Top CTA row — marketing style
     st.divider()
-    c1, c2, c3, c4 = st.columns([2,1,1,2])
-
-    with c1:
+    a,b = st.columns([3,1])
+    with a:
         st.markdown("<div class='card'>", unsafe_allow_html=True)
-        st.markdown("**Aktuální cena**")
-        st.markdown(f"<h2>{format_currency(current_price)} <small style='color:#6b7280'>({pct_change:.2f}%)</small></h2>", unsafe_allow_html=True)
+        st.markdown(f"<div style='display:flex; justify-content:space-between; align-items:center'><div><div style='font-weight:800; font-size:20px'>{format_currency(price)}</div><div class='small'>Změna: {pct:.2f}%</div></div><div style='text-align:right'><span class='badge' style='background:{color}; color:white'>{verdict}</span><div class='small' style='margin-top:6px'>Algoritmické skóre: {score}/3</div></div></div>")
         st.markdown("</div>", unsafe_allow_html=True)
-
-    with c2:
+        st.markdown("<br>")
+        st.markdown("<div class='card'><strong>Co dělá aplikace:</strong> agreguje trend, momentum a oscilátor do jednoduchého signálu. Marketingově: rychle ukazuje, zda trh dýchá nahoru nebo dolů.</div>", unsafe_allow_html=True)
+    with b:
         st.markdown("<div class='card' style='text-align:center'>", unsafe_allow_html=True)
-        st.markdown("**Algoritmické skóre**")
-        st.markdown(f"<h3>{score}/3</h3>", unsafe_allow_html=True)
+        st.markdown("<div class='small'>Share / Export</div>")
+        if st.button('📤 Exportovat CSV'):
+            st.download_button('Stáhnout CSV', df.to_csv(index=True), file_name=f'{ticker}_data.csv')
         st.markdown("</div>", unsafe_allow_html=True)
 
-    with c3:
-        st.markdown("<div class='card' style='text-align:center'>", unsafe_allow_html=True)
-        st.markdown("**Verdikt**")
-        st.markdown(f"<div class='verdict' style='background:{color}; color:white; display:inline-block'>{verdict}</div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with c4:
-        st.markdown("<div class='card'>", unsafe_allow_html=True)
-        st.markdown("**Detaily rozhodnutí**")
-        for r in reasons:
-            st.markdown(f"- {r}")
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    # --- PLOTLY CHARTS ---
-    st.subheader("📊 Technická analýza v čase")
-
-    fig = make_subplots(rows=3, cols=1, shared_xaxes=True,
-                        vertical_spacing=0.05,
-                        row_heights=[0.5, 0.25, 0.25],
-                        subplot_titles=(f"Cena {ticker} + SMA", "RSI (14)", "MACD (12,26,9)"))
-
+    # Charts (prominent)
+    st.subheader('Vizualizace — moderní')
+    fig = make_subplots(rows=3, cols=1, shared_xaxes=True, vertical_spacing=0.05, row_heights=[0.55,0.22,0.23])
     fig.add_trace(go.Candlestick(x=df.index, open=df['Open'], high=df['High'], low=df['Low'], close=df['Close'], name='Cena'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=df.index, y=df['SMA_50'], name='SMA 50', line=dict(width=1.6)), row=1, col=1)
-    fig.add_trace(go.Scatter(x=df.index, y=df['SMA_200'], name='SMA 200', line=dict(width=1.6)), row=1, col=1)
-
-    fig.add_trace(go.Scatter(x=df.index, y=df['RSI'], name='RSI', line=dict(width=1.6)), row=2, col=1)
-    fig.add_hline(y=70, line_width=1, line_dash='dash', line_color='red', row=2, col=1)
-    fig.add_hline(y=30, line_width=1, line_dash='dash', line_color='green', row=2, col=1)
-
-    fig.add_trace(go.Scatter(x=df.index, y=df['MACD'], name='MACD', line=dict(width=1.6)), row=3, col=1)
-    fig.add_trace(go.Scatter(x=df.index, y=df['Signal_Line'], name='Signal', line=dict(width=1.6)), row=3, col=1)
-
-    fig.update_layout(height=800, xaxis_rangeslider_visible=False)
+    fig.add_trace(go.Scatter(x=df.index, y=df['SMA_50'], name='SMA 50', line=dict(width=1.4)), row=1, col=1)
+    fig.add_trace(go.Scatter(x=df.index, y=df['SMA_200'], name='SMA 200', line=dict(width=1.4)), row=1, col=1)
+    fig.add_trace(go.Scatter(x=df.index, y=df['RSI'], name='RSI', line=dict(width=1.4)), row=2, col=1)
+    fig.add_hline(y=70, line_dash='dash', row=2, col=1)
+    fig.add_hline(y=30, line_dash='dash', row=2, col=1)
+    fig.add_trace(go.Scatter(x=df.index, y=df['MACD'], name='MACD', line=dict(width=1.4)), row=3, col=1)
+    fig.add_trace(go.Scatter(x=df.index, y=df['Signal_Line'], name='Signal', line=dict(width=1.4)), row=3, col=1)
+    fig.update_layout(height=780, xaxis_rangeslider_visible=False, template='plotly_white')
     st.plotly_chart(fig, use_container_width=True)
 
-    # --- RAW DATA ---
-    st.divider()
-    with st.expander("📋 Zobrazit surová data (posledních 10 řádků)"):
+    # Technicals are present but de-emphasized
+    with st.expander('Technické indikátory — podrobně (pro odborníky)', expanded=False):
+        st.markdown('''
+        - **SMA 50 / SMA 200** — klasik: dlouhodobý vs. krátkodobý trend.
+        - **RSI (14)** — indikátor překoupenosti/přeprodanosti.
+        - **MACD (12,26,9)** — měření momenta.
+        ''')
         st.dataframe(df.tail(10).style.format("{:.2f}"))
 
-    # --- SHORT NOTES FOR LAYMAN (visible) ---
-    with st.expander("📝 Rychlé shrnutí (co to znamená)", expanded=False):
-        st.markdown("""
-        - <b>BUY / SELL</b> jsou pouze orientační signály. Neberte je jako investiční radu.
-        - Pokud chcete konzervativnější pohled, zvyšte váhu SMA a vyčkejte na potvrzení (více než 1 den).
-        - Na historická data se dá nahlédnout v sekci surových dat.
-        """, unsafe_allow_html=True)
+    # Marketing footer
+    st.divider()
+    st.markdown("<div style='display:flex; gap:14px'>", unsafe_allow_html=True)
+    st.markdown("<div class='card' style='flex:1'><strong>Proč to funguje pro týmy</strong><div class='small'>Jednoduché KPI, vizuály vhodné pro prezentace, export dat pro reporting.</div></div>", unsafe_allow_html=True)
+    st.markdown("<div class='card' style='flex:1'><strong>Chcete bílou knihu?</strong><div class='small'>Nabízíme připravený marketingový deck, který shrne metodu a přínosy pro management (kontaktujte nás).</div></div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    st.markdown('<div class="small">Verze: Futuristic UI — marketing-first. Technika dostupná po rozkliknutí.</div>', unsafe_allow_html=True)
