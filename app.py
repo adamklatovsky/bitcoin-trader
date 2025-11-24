@@ -6,60 +6,50 @@ from plotly.subplots import make_subplots
 import datetime
 
 # -----------------------------
-# BTC ALGO TRADER — FUTURISTIC UI
-# Marketing-forward, technické části jsou dostupné, ale vizuálně upozaděné.
+# BTC FUTURE Trader — CLEAN FUTURISTIC
+# Marketing-forward but stable and readable. Opravené chyby CSS a layoutu.
 # -----------------------------
 
 st.set_page_config(page_title="BTC FUTURE Trader", page_icon="🚀", layout="wide")
 
-# --- STYLING: futuristický, světlý s neon akcenty ---
+# --- STYLING: minimal, safe CSS (nezasahuje do Streamlit internals) ---
 st.markdown("""
 <style>
-:root{ --bg:#0f1724; --card:#0b1220; --muted:#9aa6b2; --accent:#7c3aed; --glass: rgba(255,255,255,0.04);} 
-/* overall */
-body { background: linear-gradient(180deg, #f8fbff 0%, #eef6ff 100%); color: #061126; font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto;}
-/* hero */
-.hero { background: linear-gradient(90deg, rgba(124,58,237,0.08), rgba(59,130,246,0.04)); padding:22px; border-radius:14px; box-shadow: 0 8px 30px rgba(99,102,241,0.08); }
-.h1 { font-size:28px; font-weight:800; margin-bottom:6px }
-.h2 { font-size:14px; color:var(--muted); margin-top:0 }
-/* cards */
-.card { background: white; border-radius:12px; padding:16px; box-shadow: 0 6px 18px rgba(15,23,42,0.04); border: 1px solid rgba(11,22,35,0.04); }
-.metric { font-weight:700; font-size:18px }
-.badge { display:inline-block; padding:8px 12px; border-radius:999px; font-weight:700 }
-/* subtle neon accents */
-.accent { color: var(--accent); }
-.small { color: var(--muted); font-size:13px }
-/* marketing box */
-.pitch { border-radius:12px; padding:14px; background: linear-gradient(180deg, rgba(124,58,237,0.06), rgba(124,58,237,0.02)); }
+/* safe scope: only classes we add */
+.bft-hero{ background: linear-gradient(90deg, rgba(124,58,237,0.06), rgba(59,130,246,0.02)); padding:18px; border-radius:12px;}
+.bft-card{ background:#fff; border-radius:12px; padding:14px; box-shadow:0 6px 18px rgba(15,23,42,0.04); border:1px solid rgba(11,22,35,0.04);}
+.bft-h1{ font-size:22px; font-weight:800; margin:0 }
+.bft-sub{ color:#586069; margin-top:6px; font-size:13px }
+.bft-badge{ display:inline-block; padding:8px 12px; border-radius:999px; font-weight:700 }
+.bft-small{ color:#7b8794; font-size:13px }
+/* ensure charts and tables behave */
+.streamlit-expanderHeader{ font-weight:600 }
 </style>
 """, unsafe_allow_html=True)
 
-# --- HERO / MARKETING FIRST ---
+# --- HERO ---
 col1, col2 = st.columns([3,1])
 with col1:
-    st.markdown("<div class='hero'>", unsafe_allow_html=True)
-    st.markdown("<div class='h1'>BTC FUTURE Trader — Predict. Prepare. Profit.</div>", unsafe_allow_html=True)
-    st.markdown("<div class='h2'>Interaktivní zážitek pro obchodníky i nadšence. Rychlé rozhodnutí, moderní vizualizace, jednoduché signály. Ne investiční rada — analytický nástroj.</div>", unsafe_allow_html=True)
+    st.markdown("<div class='bft-hero'>", unsafe_allow_html=True)
+    st.markdown("<div class='bft-h1'>BTC FUTURE Trader — Predict. Prepare. Present.</div>", unsafe_allow_html=True)
+    st.markdown("<div class='bft-sub'>Marketing-first prezentace dat, přitom plná techniky pro ty, kdo chtějí jít do hloubky.</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
-    st.markdown("<br>")
-    st.markdown("<div class='pitch card'><strong>Pro koho je to nejlepší:</strong> pro vizuální analytiky, marketingové týmy a aktivní tradery, kteří chtějí rychlé rozhodnutí bez ztráty transparency.</div>", unsafe_allow_html=True)
 with col2:
-    st.markdown("<div class='card' style='text-align:center'>", unsafe_allow_html=True)
-    st.markdown("<div class='small'>Current tech</div>")
-    st.markdown(f"<h3 class='metric accent'>Automatické skórování — SMA · RSI · MACD</h3>", unsafe_allow_html=True)
-    st.markdown("<div class='small' style='margin-top:6px'>Upozaděné odborné indikátory — klikněte na 'Technické' pro podrobnosti.</div>", unsafe_allow_html=True)
+    st.markdown("<div class='bft-card' style='text-align:center'>", unsafe_allow_html=True)
+    st.markdown("<div class='bft-small'>Verze</div>")
+    st.markdown(f"<div style='font-weight:700; font-size:18px'>{datetime.date.today().isoformat()}</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-# --- SIDEBAR SETTINGS (compact) ---
+# --- SIDEBAR ---
 with st.sidebar:
-    st.header("Start")
+    st.header("Nastavení")
     ticker = st.text_input("Ticker", value="BTC-USD")
-    period = st.selectbox("Rozsah dat", options=['1y','2y','5y'], index=1)
-    st.markdown("<div class='small'>Data: Yahoo Finance · Analýza: SMA/RSI/MACD</div>", unsafe_allow_html=True)
-    if st.button("🔄 Obnovit data"):
+    period = st.selectbox("Rozsah dat", options=["1y","2y","5y"], index=1)
+    st.write("<div class='bft-small'>Zdroj dat: Yahoo Finance — nástroj pro analytické a prezentacní účely.</div>", unsafe_allow_html=True)
+    if st.button("🔄 Obnovit cache"):
         st.cache_data.clear()
 
-# --- DATA & INDICATORS (nedotčeno) ---
+# --- DATA LOADING & INDICATORS ---
 @st.cache_data
 def load_data(symbol, period):
     try:
@@ -131,10 +121,10 @@ def format_currency(v):
     try: return f"${v:,.2f}"
     except: return '-'
 
-# --- RENDERING ---
+# --- RENDER UI ---
 raw = load_data(ticker, period)
 if raw.empty:
-    st.error('Nepodařilo se stáhnout data — zkontrolujte ticker.')
+    st.error('Nepodařilo se stáhnout data — zkontroluj ticker.')
 else:
     df = calculate_technicals(raw)
     last = df.iloc[-1]
@@ -143,24 +133,28 @@ else:
     pct = (price - prev) / prev * 100 if prev != 0 else 0
     score, verdict, color, reasons = get_trading_signal(last)
 
-    # Top CTA row — marketing style
+    # TOP ROW — clean cards
     st.divider()
-    a,b = st.columns([3,1])
-    with a:
-        st.markdown("<div class='card'>", unsafe_allow_html=True)
-        st.markdown(f"<div style='display:flex; justify-content:space-between; align-items:center'><div><div style='font-weight:800; font-size:20px'>{format_currency(price)}</div><div class='small'>Změna: {pct:.2f}%</div></div><div style='text-align:right'><span class='badge' style='background:{color}; color:white'>{verdict}</span><div class='small' style='margin-top:6px'>Algoritmické skóre: {score}/3</div></div></div>")
+    c1,c2,c3 = st.columns([2,1,1])
+    with c1:
+        st.markdown("<div class='bft-card'>", unsafe_allow_html=True)
+        st.markdown(f"<div style='display:flex; justify-content:space-between; align-items:center'><div><div style='font-weight:800; font-size:20px'>{format_currency(price)}</div><div class='bft-small'>Změna: {pct:.2f}%</div></div><div style='text-align:right'><span class='bft-badge' style='background:{color}; color:white'>{verdict}</span><div class='bft-small' style='margin-top:6px'>Skóre: {score}/3</div></div></div>")
         st.markdown("</div>", unsafe_allow_html=True)
-        st.markdown("<br>")
-        st.markdown("<div class='card'><strong>Co dělá aplikace:</strong> agreguje trend, momentum a oscilátor do jednoduchého signálu. Marketingově: rychle ukazuje, zda trh dýchá nahoru nebo dolů.</div>", unsafe_allow_html=True)
-    with b:
-        st.markdown("<div class='card' style='text-align:center'>", unsafe_allow_html=True)
-        st.markdown("<div class='small'>Share / Export</div>")
-        if st.button('📤 Exportovat CSV'):
-            st.download_button('Stáhnout CSV', df.to_csv(index=True), file_name=f'{ticker}_data.csv')
+    with c2:
+        st.markdown("<div class='bft-card' style='text-align:center'>", unsafe_allow_html=True)
+        st.markdown("<div class='bft-small'>Export</div>")
+        csv = df.to_csv(index=True)
+        st.download_button('📥 Stáhnout CSV', data=csv, file_name=f'{ticker}_data.csv', mime='text/csv')
+        st.markdown("</div>", unsafe_allow_html=True)
+    with c3:
+        st.markdown("<div class='bft-card' style='text-align:center'>", unsafe_allow_html=True)
+        st.markdown("<div class='bft-small'>Detaily</div>")
+        for r in reasons:
+            st.markdown(f"- {r}")
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # Charts (prominent)
-    st.subheader('Vizualizace — moderní')
+    # CHARTS
+    st.subheader('Vizualizace')
     fig = make_subplots(rows=3, cols=1, shared_xaxes=True, vertical_spacing=0.05, row_heights=[0.55,0.22,0.23])
     fig.add_trace(go.Candlestick(x=df.index, open=df['Open'], high=df['High'], low=df['Low'], close=df['Close'], name='Cena'), row=1, col=1)
     fig.add_trace(go.Scatter(x=df.index, y=df['SMA_50'], name='SMA 50', line=dict(width=1.4)), row=1, col=1)
@@ -170,23 +164,22 @@ else:
     fig.add_hline(y=30, line_dash='dash', row=2, col=1)
     fig.add_trace(go.Scatter(x=df.index, y=df['MACD'], name='MACD', line=dict(width=1.4)), row=3, col=1)
     fig.add_trace(go.Scatter(x=df.index, y=df['Signal_Line'], name='Signal', line=dict(width=1.4)), row=3, col=1)
-    fig.update_layout(height=780, xaxis_rangeslider_visible=False, template='plotly_white')
+    fig.update_layout(height=760, xaxis_rangeslider_visible=False, template='plotly_white')
     st.plotly_chart(fig, use_container_width=True)
 
-    # Technicals are present but de-emphasized
-    with st.expander('Technické indikátory — podrobně (pro odborníky)', expanded=False):
-        st.markdown('''
-        - **SMA 50 / SMA 200** — klasik: dlouhodobý vs. krátkodobý trend.
-        - **RSI (14)** — indikátor překoupenosti/přeprodanosti.
-        - **MACD (12,26,9)** — měření momenta.
-        ''')
-        st.dataframe(df.tail(10).style.format("{:.2f}"))
+    # TECHNICALS (deemphasized)
+    with st.expander('Technické indikátory — podrobně'):
+        st.markdown('- SMA 50 / SMA 200: určení trendu')
+        st.markdown('- RSI (14): překoupenost / přeprodanost')
+        st.markdown('- MACD (12,26,9): momentum')
+        st.dataframe(df.tail(10).style.format('{:.2f}'))
 
-    # Marketing footer
+    # FOOTER (marketing)
     st.divider()
-    st.markdown("<div style='display:flex; gap:14px'>", unsafe_allow_html=True)
-    st.markdown("<div class='card' style='flex:1'><strong>Proč to funguje pro týmy</strong><div class='small'>Jednoduché KPI, vizuály vhodné pro prezentace, export dat pro reporting.</div></div>", unsafe_allow_html=True)
-    st.markdown("<div class='card' style='flex:1'><strong>Chcete bílou knihu?</strong><div class='small'>Nabízíme připravený marketingový deck, který shrne metodu a přínosy pro management (kontaktujte nás).</div></div>", unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+    f1,f2 = st.columns(2)
+    with f1:
+        st.markdown("<div class='bft-card'><strong>Pro týmy</strong><div class='bft-small'>Rychlé vizuály pro reporty a prezentace. CSV export pro další zpracování.</div></div>", unsafe_allow_html=True)
+    with f2:
+        st.markdown("<div class='bft-card'><strong>Potřebujete prezentaci?</strong><div class='bft-small'>Můžu připravit PPTX s vysvětlením metrik a grafy.</div></div>", unsafe_allow_html=True)
 
-    st.markdown('<div class="small">Verze: Futuristic UI — marketing-first. Technika dostupná po rozkliknutí.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="bft-small">Stabilní futuristický UI — technika je dostupná, UX je prioritou.</div>', unsafe_allow_html=True)
