@@ -105,7 +105,13 @@ with st.sidebar:
 
 @st.cache_data
 def load_data(symbol, period):
+    # Stáhneme data
     df = yf.download(symbol, period=period, progress=False)
+    
+    # OPRAVA CHYBY: Pokud má tabulka složité sloupce (MultiIndex), zploštíme je
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(0)
+        
     return df
 
 try:
