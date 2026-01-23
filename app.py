@@ -115,12 +115,12 @@ with st.sidebar:
     period = st.selectbox("Historie", ["1y", "2y", "5y"], index=1)
     daily_dca = st.number_input("Denní nákup (Kč)", value=100, step=50)
 
-    if st.button("🔁 Reset portfolia"):
-        st.session_state.cash = 0
-        st.session_state.btc = 0
-        st.session_state.position = "OUT"
-        st.session_state.log = []
-        st.experimental_rerun()
+if st.button("🔁 Reset portfolia"):
+    st.session_state.cash = 0
+    st.session_state.btc = 0
+    st.session_state.position = "OUT"
+    st.session_state.log = []
+    st.rerun()
 
 # ===============================
 # DATA
