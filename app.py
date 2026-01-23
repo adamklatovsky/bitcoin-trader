@@ -8,35 +8,24 @@ from plotly.subplots import make_subplots
 # KONFIGURACE STRÁNKY
 # ===============================
 st.set_page_config(
-    page_title="BTC Regime Trader",
+    page_title="BTC Market Signal",
     page_icon="₿",
     layout="wide"
 )
 
-st.title("₿ Bitcoin Regime Trader")
+st.title("₿ Bitcoin Market Signal")
 st.markdown("""
-**Smysl aplikace:**  
-- BUY → režim nákupu (DCA + re-entry)  
-- SELL → režim ochrany kapitálu  
-- HOLD → nedělá nic  
+**Co to je:**  
+Jednoduchý indikátor režimu trhu.
 
-Neřeší timing. Řeší **kdy smíš kupovat**.
+- **BUY** → trh je vhodný pro nákupy  
+- **HOLD** → nejasná situace  
+- **SELL** → trh není vhodný pro držení / nákup  
+
+Neřeší peníze.  
+Neřeší strategii.  
+Říká jen **v jakém režimu se trh nachází**.
 """)
-
-# ===============================
-# SESSION STATE (PORTFOLIO)
-# ===============================
-if "cash" not in st.session_state:
-    st.session_state.cash = 0.0
-
-if "btc" not in st.session_state:
-    st.session_state.btc = 0.0
-
-if "position" not in st.session_state:
-    st.session_state.position = "OUT"  # IN / OUT
-
-if "log" not in st.session_state:
-    st.session_state.log = []
 
 # ===============================
 # TECHNICKÉ INDIKÁTORY
@@ -44,15 +33,18 @@ if "log" not in st.session_state:
 def calculate_technicals(df):
     data = df.copy()
 
+    # SMA
     data["SMA_50"] = data["Close"].rolling(50).mean()
     data["SMA_200"] = data["Close"].rolling(200).mean()
 
+    # RSI
     delta = data["Close"].diff()
     gain = delta.where(delta > 0, 0).rolling(14).mean()
     loss = -delta.where(delta < 0, 0).rolling(14).mean()
     rs = gain / loss
     data["RSI"] = 100 - (100 / (1 + rs))
 
+    # MACD
     ema12 = data["Close"].ewm(span=12, adjust=False).mean()
     ema26 = data["Close"].ewm(span=26, adjust=False).mean()
     data["MACD"] = ema12 - ema26
@@ -61,32 +53,37 @@ def calculate_technicals(df):
     return data
 
 # ===============================
-# SKÓROVÁNÍ TRHU
+# SIGNÁL
 # ===============================
 def get_signal(row):
     score = 0
     reasons = []
 
+    # Trend
     if row["SMA_50"] > row["SMA_200"]:
         score += 1
-        reasons.append("Trend: býčí (SMA50 > SMA200)")
+        reasons.append("📈 Trend: býčí (SMA 50 > SMA 200)")
     else:
         score -= 1
-        reasons.append("Trend: medvědí (SMA50 < SMA200)")
+        reasons.append("📉 Trend: medvědí (SMA 50 < SMA 200)")
 
+    # RSI
     if row["RSI"] < 30:
         score += 1
-        reasons.append("RSI: přeprodaný")
+        reasons.append("💎 RSI: přeprodaný (<30)")
     elif row["RSI"] > 70:
         score -= 1
-        reasons.append("RSI: překoupený")
+        reasons.append("🔥 RSI: překoupený (>70)")
+    else:
+        reasons.append("⚖️ RSI: neutrální (30–70)")
 
+    # MACD
     if row["MACD"] > row["MACD_SIGNAL"]:
         score += 1
-        reasons.append("MACD: pozitivní momentum")
+        reasons.append("🚀 MACD: pozitivní momentum")
     else:
         score -= 1
-        reasons.append("MACD: negativní momentum")
+        reasons.append("🐌 MACD: negativní momentum")
 
     if score >= 2:
         verdict = "BUY"
@@ -113,14 +110,7 @@ with st.sidebar:
     st.header("⚙️ Nastavení")
     ticker = st.text_input("Ticker", "BTC-USD")
     period = st.selectbox("Historie", ["1y", "2y", "5y"], index=1)
-    daily_dca = st.number_input("Denní nákup (Kč)", value=100, step=50)
-
-if st.button("🔁 Reset portfolia"):
-    st.session_state.cash = 0
-    st.session_state.btc = 0
-    st.session_state.position = "OUT"
-    st.session_state.log = []
-    st.rerun()
+    st.caption("Zdroj dat: Yahoo Finance")
 
 # ===============================
 # DATA
@@ -145,85 +135,57 @@ price = last["Close"]
 score, verdict, color, reasons = get_signal(last)
 
 # ===============================
-# ROZHODOVACÍ LOGIKA (STAVOVÝ AUTOMAT)
-# ===============================
-action = "Žádná akce"
-
-# BUY režim
-if verdict in ["BUY", "WEAK BUY"]:
-    if st.session_state.position == "OUT" and st.session_state.cash > 0:
-        st.session_state.btc += st.session_state.cash / price
-        st.session_state.log.append(f"RE-ENTRY za {st.session_state.cash:.0f} Kč")
-        st.session_state.cash = 0
-        st.session_state.position = "IN"
-        action = "RE-ENTRY – nákup za celý cash"
-
-    elif st.session_state.position == "IN":
-        st.session_state.cash += daily_dca
-        st.session_state.btc += daily_dca / price
-        st.session_state.log.append(f"DCA +{daily_dca} Kč")
-        action = f"DCA nákup +{daily_dca} Kč"
-
-# SELL režim
-elif verdict in ["SELL", "STRONG SELL"]:
-    if st.session_state.position == "IN":
-        st.session_state.cash += st.session_state.btc * price
-        st.session_state.log.append("EXIT – prodej všeho")
-        st.session_state.btc = 0
-        st.session_state.position = "OUT"
-        action = "EXIT – prodáno vše"
-
-# ===============================
-# DASHBOARD
+# HLAVNÍ SEMAFOR
 # ===============================
 st.divider()
 
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3 = st.columns(3)
 
 col1.metric("Cena BTC", f"${price:,.0f}")
 col2.metric("Skóre", f"{score}/3")
-col3.markdown(f"<h2 style='color:{color}'>{verdict}</h2>", unsafe_allow_html=True)
-col4.metric("Režim", st.session_state.position)
+col3.markdown(
+    f"<h1 style='color:{color}; text-align:center'>{verdict}</h1>",
+    unsafe_allow_html=True
+)
 
-st.info(action)
-
-# ===============================
-# PORTFOLIO
-# ===============================
-st.subheader("💼 Portfolio")
-total_value = st.session_state.cash + st.session_state.btc * price
-
-c1, c2, c3 = st.columns(3)
-c1.metric("Cash (Kč)", f"{st.session_state.cash:,.0f}")
-c2.metric("BTC", f"{st.session_state.btc:.6f}")
-c3.metric("Celkem (Kč)", f"{total_value:,.0f}")
+with st.expander("🔍 Proč tento signál"):
+    for r in reasons:
+        st.write(r)
 
 # ===============================
-# GRAF
+# GRAFY
 # ===============================
-fig = make_subplots(rows=3, cols=1, shared_xaxes=True)
+st.subheader("📊 Technická analýza")
 
+fig = make_subplots(
+    rows=3,
+    cols=1,
+    shared_xaxes=True,
+    vertical_spacing=0.05,
+    row_heights=[0.5, 0.25, 0.25],
+    subplot_titles=("Cena + SMA", "RSI (14)", "MACD")
+)
+
+# Cena
 fig.add_trace(go.Candlestick(
     x=df.index,
     open=df["Open"],
     high=df["High"],
     low=df["Low"],
-    close=df["Close"],
+    close=df["Close"]
 ), row=1, col=1)
 
-fig.add_trace(go.Scatter(x=df.index, y=df["SMA_50"], name="SMA50"), row=1, col=1)
-fig.add_trace(go.Scatter(x=df.index, y=df["SMA_200"], name="SMA200"), row=1, col=1)
+fig.add_trace(go.Scatter(x=df.index, y=df["SMA_50"], name="SMA 50"), row=1, col=1)
+fig.add_trace(go.Scatter(x=df.index, y=df["SMA_200"], name="SMA 200"), row=1, col=1)
 
+# RSI
 fig.add_trace(go.Scatter(x=df.index, y=df["RSI"], name="RSI"), row=2, col=1)
+fig.add_hline(y=70, line_dash="dash", row=2, col=1)
+fig.add_hline(y=30, line_dash="dash", row=2, col=1)
+
+# MACD
 fig.add_trace(go.Scatter(x=df.index, y=df["MACD"], name="MACD"), row=3, col=1)
 fig.add_trace(go.Scatter(x=df.index, y=df["MACD_SIGNAL"], name="Signal"), row=3, col=1)
 
-fig.update_layout(height=800, showlegend=False)
+fig.update_layout(height=850, showlegend=False)
 st.plotly_chart(fig, use_container_width=True)
-
-# ===============================
-# LOG
-# ===============================
-with st.expander("📜 Log akcí"):
-    for l in st.session_state.log[-20:]:
-        st.write(l)
