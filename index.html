@@ -1,0 +1,123 @@
+{\rtf1\ansi\ansicpg1250\cocoartf2867
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 <!DOCTYPE html>\
+<html lang="cs">\
+<head>\
+    <meta charset="UTF-8">\
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">\
+    <title>BTC Predictor Pro</title>\
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>\
+    <style>\
+        :root \{\
+            --bg: #121212;\
+            --card: #1e1e1e;\
+            --text: #e0e0e0;\
+            --buy: #2ecc71;\
+            --sell: #e74c3c;\
+            --hold: #f1c40f;\
+        \}\
+        body \{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; \}\
+        .container \{ background-color: var(--card); padding: 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 90%; max-width: 500px; text-align: center; \}\
+        h1 \{ font-size: 1.5rem; margin-bottom: 1rem; color: #fff; \}\
+        \
+        #signal-box \{ font-size: 3rem; font-weight: 800; padding: 1.5rem; border-radius: 15px; margin: 1rem 0; transition: all 0.5s ease; text-transform: uppercase; \}\
+        .buy-style \{ background: rgba(46, 204, 113, 0.2); color: var(--buy); border: 2px solid var(--buy); \}\
+        .sell-style \{ background: rgba(231, 76, 60, 0.2); color: var(--sell); border: 2px solid var(--sell); \}\
+        .hold-style \{ background: rgba(241, 196, 15, 0.2); color: var(--hold); border: 2px solid var(--hold); \}\
+        \
+        .instruction \{ font-style: italic; margin-bottom: 2rem; min-height: 50px; line-height: 1.4; \}\
+        .metrics \{ display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; \}\
+        .metric-item \{ background: #2a2a2a; padding: 10px; border-radius: 10px; font-size: 0.9rem; \}\
+        .metric-value \{ display: block; font-weight: bold; color: #fff; margin-top: 5px; \}\
+        .loader \{ border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 30px; height: 30px; animation: spin 2s linear infinite; margin: 20px auto; \}\
+        @keyframes spin \{ 0% \{ transform: rotate(0deg); \} 100% \{ transform: rotate(360deg); \} \}\
+    </style>\
+</head>\
+<body>\
+\
+<div class="container">\
+    <h1>Bitcoin Decision Support</h1>\
+    <div id="loader" class="loader"></div>\
+    <div id="content" style="display:none;">\
+        <div id="signal-box">---</div>\
+        <p class="instruction" id="instruction">Analyzuji tr\'9en\'ed data...</p>\
+        \
+        <div class="metrics">\
+            <div class="metric-item">Cena BTC<span class="metric-value" id="price">-</span></div>\
+            <div class="metric-item">Fear & Greed<span class="metric-value" id="fng">-</span></div>\
+            <div class="metric-item">RSI (14d)<span class="metric-value" id="rsi">-</span></div>\
+            <div class="metric-item">Trend (SMA20)<span class="metric-value" id="trend">-</span></div>\
+        </div>\
+        <p style="font-size: 0.7rem; color: #666; margin-top: 20px;">Data jsou pouze orienta\uc0\u269 n\'ed. Investujte zodpov\u283 dn\u283 .</p>\
+    </div>\
+</div>\
+\
+<script>\
+async function fetchData() \{\
+    try \{\
+        // 1. Cena a Historie pro RSI/SMA\
+        const priceRes = await fetch('https://min-api.cryptocompare.com/data/v2/histoday?fsym=BTC&tsym=USD&limit=20');\
+        const priceData = await priceRes.json();\
+        const history = priceData.Data.Data;\
+        const currentPrice = history[history.length - 1].close;\
+        \
+        // 2. Fear & Greed Index\
+        const fngRes = await fetch('https://api.alternative.me/fng/');\
+        const fngData = await fngRes.json();\
+        const fngValue = fngData.data[0].value;\
+\
+        // V\'fdpo\uc0\u269 et jednoduch\'e9ho RSI (zjednodu\'9aeno pro uk\'e1zku)\
+        let gains = 0, losses = 0;\
+        for (let i = history.length - 14; i < history.length; i++) \{\
+            let diff = history[i].close - history[i-1].close;\
+            diff > 0 ? gains += diff : losses -= diff;\
+        \}\
+        const rsi = 100 - (100 / (1 + (gains / losses)));\
+        \
+        // V\'fdpo\uc0\u269 et SMA 20\
+        const sma20 = history.reduce((a, b) => a + b.close, 0) / history.length;\
+\
+        updateUI(currentPrice, fngValue, rsi, sma20);\
+    \} catch (error) \{\
+        console.error("Chyba dat:", error);\
+        document.getElementById('instruction').innerText = "Chyba p\uc0\u345 i na\u269 \'edt\'e1n\'ed dat z API.";\
+    \}\
+\}\
+\
+function updateUI(price, fng, rsi, sma) \{\
+    document.getElementById('loader').style.display = 'none';\
+    document.getElementById('content').style.display = 'block';\
+    \
+    document.getElementById('price').innerText = `$$\{price.toLocaleString()\}`;\
+    document.getElementById('fng').innerText = `$\{fng\}/100`;\
+    document.getElementById('rsi').innerText = rsi.toFixed(2);\
+    document.getElementById('trend').innerText = price > sma ? "Bullish" : "Bearish";\
+\
+    const signalBox = document.getElementById('signal-box');\
+    const instr = document.getElementById('instruction');\
+\
+    // LOGIKA ROZHODOV\'c1N\'cd\
+    if (rsi < 40 || fng < 30) \{\
+        signalBox.innerText = "BUY";\
+        signalBox.className = "buy-style";\
+        instr.innerText = "Trh je pod tlakem. Kupuj za 100 K\uc0\u269  nebo vlo\'9e vybranou hotovost.";\
+    \} else if (rsi > 70 || fng > 80) \{\
+        signalBox.innerText = "SELL";\
+        signalBox.className = "sell-style";\
+        instr.innerText = "Trh je p\uc0\u345 eh\u345 \'e1t\'fd. Prodej v\'9ae a \u269 ekej na lep\'9a\'ed p\u345 \'edle\'9eitost.";\
+    \} else \{\
+        signalBox.innerText = "HOLD";\
+        signalBox.className = "hold-style";\
+        instr.innerText = "\'8e\'e1dn\'fd siln\'fd sign\'e1l. Dnes nic ned\uc0\u283 lej a dr\'9e pozici.";\
+    \}\
+\}\
+\
+fetchData();\
+</script>\
+</body>\
+</html>}
