@@ -1,10 +1,16 @@
-<link rel="manifest" href="manifest.json">
 <!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>BTC Vision Pro</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BTC Vision">
+    
+    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABSz9c6AAAACXBIWXMAAAsTAAALEwEAmpwYAAAFJGlWElmTU0AKgAAAAgABgCGAAMAAAABAAEAAIdpAAQAAAABAAAAVgAAAABJRU5ErkJggg==">
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -17,7 +23,7 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             background: radial-gradient(circle at top right, #1a1a2e, #000000);
             color: #ffffff;
             display: flex;
@@ -26,70 +32,73 @@
             min-height: 100vh;
             margin: 0;
             -webkit-font-smoothing: antialiased;
+            padding: 20px;
         }
 
         .container {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border: 1px solid var(--glass-border);
             padding: 2.5rem;
-            border-radius: 35px;
-            width: 90%;
+            border-radius: 40px;
+            width: 100%;
             max-width: 400px;
             text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
         }
 
         h1 {
             font-weight: 800;
-            letter-spacing: -1px;
+            letter-spacing: -1.5px;
             margin-bottom: 2rem;
             background: linear-gradient(180deg, #fff 0%, #888 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            font-size: 2.2rem;
         }
 
         #signal-box {
-            font-size: 3.5rem;
+            font-size: 3.8rem;
             font-weight: 800;
-            margin: 1rem 0;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-bottom: 0.5rem;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .buy-style { color: var(--apple-green); text-shadow: 0 0 20px rgba(52, 199, 89, 0.4); }
-        .sell-style { color: var(--apple-red); text-shadow: 0 0 20px rgba(255, 59, 48, 0.4); }
-        .hold-style { color: var(--apple-gold); text-shadow: 0 0 20px rgba(255, 214, 10, 0.4); }
+        .buy-style { color: var(--apple-green); text-shadow: 0 0 25px rgba(52, 199, 89, 0.5); }
+        .sell-style { color: var(--apple-red); text-shadow: 0 0 25px rgba(255, 59, 48, 0.5); }
+        .hold-style { color: var(--apple-gold); text-shadow: 0 0 25px rgba(255, 214, 10, 0.5); }
 
         .instruction {
             font-weight: 300;
             color: #a1a1a6;
-            margin-bottom: 2rem;
-            line-height: 1.5;
+            margin-bottom: 2.5rem;
+            line-height: 1.4;
             min-height: 3em;
+            font-size: 0.95rem;
         }
 
         .metrics {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
         }
 
         .metric-item {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border);
-            padding: 12px;
-            border-radius: 18px;
+            padding: 15px 10px;
+            border-radius: 20px;
         }
 
-        .metric-label { font-size: 0.7rem; color: #86868b; text-transform: uppercase; letter-spacing: 1px; }
-        .metric-value { display: block; font-size: 1.1rem; font-weight: 600; margin-top: 4px; }
+        .metric-label { font-size: 0.65rem; color: #86868b; text-transform: uppercase; letter-spacing: 1.2px; }
+        .metric-value { display: block; font-size: 1.2rem; font-weight: 700; margin-top: 6px; }
 
-        .wallet-section {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 24px;
-            padding: 20px;
+        .wallet-card {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 28px;
+            padding: 22px;
             border: 1px solid var(--glass-border);
             margin-top: 15px;
             text-align: left;
@@ -97,47 +106,47 @@
 
         .profit-badge {
             float: right;
-            padding: 4px 8px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 700;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 800;
         }
 
-        .profit-pos { background: rgba(52, 199, 89, 0.2); color: var(--apple-green); }
-        .profit-neg { background: rgba(255, 59, 48, 0.2); color: var(--apple-red); }
+        .profit-pos { background: rgba(52, 199, 89, 0.15); color: var(--apple-green); }
+        .profit-neg { background: rgba(255, 59, 48, 0.15); color: var(--apple-red); }
 
-        .total-label { font-size: 0.8rem; color: #86868b; display: block; margin-bottom: 4px; }
-        .total-value { font-size: 1.4rem; font-weight: 700; margin-bottom: 15px; color: #fff; }
+        .total-label { font-size: 0.8rem; color: #a1a1a6; font-weight: 400; }
+        .total-value { font-size: 1.6rem; font-weight: 700; margin-top: 4px; margin-bottom: 18px; }
 
         .input-group {
             display: flex;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 14px;
             padding: 4px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
         input {
             background: transparent;
             border: none;
             color: white;
-            padding: 8px 12px;
+            padding: 12px;
             width: 100%;
-            font-size: 0.9rem;
+            font-size: 1rem;
             outline: none;
         }
 
         button {
             border: none;
-            border-radius: 8px;
-            font-weight: 600;
+            border-radius: 10px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
+            transition: 0.2s;
         }
 
-        .btn-add { background: #fff; color: #000; padding: 0 15px; }
-        .btn-add:active { transform: scale(0.95); }
+        .btn-add { background: #fff; color: #000; padding: 0 20px; font-size: 0.9rem; }
+        .btn-add:active { transform: scale(0.96); }
 
         .btn-reset {
             background: transparent;
@@ -145,18 +154,17 @@
             width: 100%;
             padding: 8px;
             font-size: 0.75rem;
-            margin-top: 5px;
-            opacity: 0.6;
+            font-weight: 400;
+            opacity: 0.5;
         }
-        .btn-reset:hover { opacity: 1; }
 
         .loader {
-            width: 40px; height: 40px;
-            border: 3px solid rgba(255,255,255,0.1);
+            width: 45px; height: 45px;
+            border: 3px solid rgba(255,255,255,0.05);
             border-top: #fff 3px solid;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 40px auto;
+            animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            margin: 50px auto;
         }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -171,28 +179,28 @@
     
     <div id="content" style="display:none;">
         <div id="signal-box">---</div>
-        <p class="instruction" id="instruction">Analyzuji data...</p>
+        <p class="instruction" id="instruction">Analyzuji trh...</p>
         
         <div class="metrics">
             <div class="metric-item">
-                <span class="metric-label">Cena</span>
+                <span class="metric-label">Cena (USD)</span>
                 <span class="metric-value" id="price">-</span>
             </div>
             <div class="metric-item">
-                <span class="metric-label">Sentiment</span>
+                <span class="metric-label">Fear & Greed</span>
                 <span class="metric-value" id="fng">-</span>
             </div>
             <div class="metric-item">
-                <span class="metric-label">RSI (14)</span>
+                <span class="metric-label">RSI (14d)</span>
                 <span class="metric-value" id="rsi">-</span>
             </div>
             <div class="metric-item">
-                <span class="metric-label">Trend (SMA20)</span>
+                <span class="metric-label">Trend 20d</span>
                 <span class="metric-value" id="trend">-</span>
             </div>
         </div>
 
-        <div class="wallet-section">
+        <div class="wallet-card">
             <span class="total-label">Investováno celkem</span>
             <div class="total-value"><span id="total-invested">0</span> Kč</div>
             
@@ -200,17 +208,17 @@
                 <input type="number" id="deposit-amount" placeholder="Částka vkladu" value="150">
                 <button class="btn-add" onclick="updateMoney('invested', 'deposit-amount')">Vložit</button>
             </div>
-            <button class="btn-reset" onclick="resetMoney('invested')">Resetovat vklady</button>
+            <button class="btn-reset" onclick="resetMoney('invested')">Vynulovat historii vkladů</button>
         </div>
 
-        <div class="wallet-section">
+        <div class="wallet-card">
             <div id="profit-pct" class="profit-badge profit-pos">0%</div>
-            <span class="total-label">Aktuální hodnota investice</span>
+            <span class="total-label">Aktuální hodnota</span>
             <div class="total-value"><span id="current-value-display">0</span> Kč</div>
             
             <div class="input-group">
-                <input type="number" id="current-value-input" placeholder="Zadej aktuální stav">
-                <button class="btn-add" onclick="updateMoney('current', 'current-value-input')">Aktualizovat</button>
+                <input type="number" id="current-value-input" placeholder="Zadej stav v peněžence">
+                <button class="btn-add" onclick="updateMoney('current', 'current-value-input')">Uložit</button>
             </div>
             <button class="btn-reset" onclick="resetMoney('current')">Resetovat hodnotu</button>
         </div>
@@ -218,113 +226,119 @@
 </div>
 
 <script>
-let data = {
-    invested: parseFloat(localStorage.getItem('btc_v3_invested')) || 0,
-    current: parseFloat(localStorage.getItem('btc_v3_current')) || 0
-};
+    // Správa dat v LocalStorage
+    let data = {
+        invested: parseFloat(localStorage.getItem('btc_v4_invested')) || 0,
+        current: parseFloat(localStorage.getItem('btc_v4_current')) || 0
+    };
 
-updateUI();
-
-function updateMoney(type, inputId) {
-    const input = document.getElementById(inputId);
-    const val = parseFloat(input.value);
-    
-    if (!isNaN(val) && val >= 0) {
-        if (type === 'invested') {
-            data.invested += val;
-        } else {
-            data.current = val;
-        }
-        saveAndRefresh();
-        input.value = "";
-    }
-}
-
-function resetMoney(type) {
-    if (confirm('Opravdu resetovat?')) {
-        data[type] = 0;
-        saveAndRefresh();
-    }
-}
-
-function saveAndRefresh() {
-    localStorage.setItem('btc_v3_invested', data.invested);
-    localStorage.setItem('btc_v3_current', data.current);
     updateUI();
-}
 
-function updateUI() {
-    document.getElementById('total-invested').innerText = data.invested.toLocaleString('cs-CZ');
-    document.getElementById('current-value-display').innerText = data.current.toLocaleString('cs-CZ');
-    
-    const profitEl = document.getElementById('profit-pct');
-    if (data.invested > 0) {
-        const pct = ((data.current - data.invested) / data.invested) * 100;
-        profitEl.innerText = (pct > 0 ? "+" : "") + pct.toFixed(1) + "%";
-        profitEl.className = "profit-badge " + (pct >= 0 ? "profit-pos" : "profit-neg");
-        profitEl.style.display = "block";
-    } else {
-        profitEl.style.display = "none";
-    }
-}
-
-async function fetchData() {
-    try {
-        const pRes = await fetch('https://min-api.cryptocompare.com/data/v2/histoday?fsym=BTC&tsym=USD&limit=30');
-        const pData = await pRes.json();
-        const history = pData.Data.Data;
-        const price = history[history.length - 1].close;
+    function updateMoney(type, inputId) {
+        const input = document.getElementById(inputId);
+        const val = parseFloat(input.value);
         
-        const fRes = await fetch('https://api.alternative.me/fng/');
-        const fData = await fRes.json();
-        const fng = parseInt(fData.data[0].value);
-
-        // Robustní RSI (14)
-        let gains = 0, losses = 0;
-        for (let i = history.length - 14; i < history.length; i++) {
-            let diff = history[i].close - history[i-1].close;
-            if (diff > 0) gains += diff; else losses -= diff;
+        if (!isNaN(val) && val >= 0) {
+            if (type === 'invested') {
+                data.invested += val;
+            } else {
+                data.current = val;
+            }
+            saveData();
+            input.value = "";
         }
+    }
+
+    function resetMoney(type) {
+        if (confirm('Smazat data této sekce?')) {
+            data[type] = 0;
+            saveData();
+        }
+    }
+
+    function saveData() {
+        localStorage.setItem('btc_v4_invested', data.invested);
+        localStorage.setItem('btc_v4_current', data.current);
+        updateUI();
+    }
+
+    function updateUI() {
+        document.getElementById('total-invested').innerText = Math.round(data.invested).toLocaleString('cs-CZ');
+        document.getElementById('current-value-display').innerText = Math.round(data.current).toLocaleString('cs-CZ');
         
-        const rs = losses === 0 ? 100 : gains / losses;
-        const rsi = 100 - (100 / (1 + rs));
-        const sma = history.slice(-20).reduce((a, b) => a + b.close, 0) / 20;
-
-        render(price, fng, rsi, sma);
-    } catch (e) {
-        document.getElementById('instruction').innerText = "Chyba při načítání dat. Zkontroluj připojení.";
+        const profitEl = document.getElementById('profit-pct');
+        if (data.invested > 0) {
+            const pct = ((data.current - data.invested) / data.invested) * 100;
+            profitEl.innerText = (pct > 0 ? "+" : "") + pct.toFixed(1) + "%";
+            profitEl.className = "profit-badge " + (pct >= 0 ? "profit-pos" : "profit-neg");
+            profitEl.style.display = "block";
+        } else {
+            profitEl.style.display = "none";
+        }
     }
-}
 
-function render(price, fng, rsi, sma) {
-    document.getElementById('loader').style.display = 'none';
-    document.getElementById('content').style.display = 'block';
-    
-    document.getElementById('price').innerText = `$${price.toLocaleString()}`;
-    document.getElementById('fng').innerText = `${fng}/100`;
-    document.getElementById('rsi').innerText = Math.round(rsi);
-    document.getElementById('trend').innerText = price > sma ? "Up" : "Down";
+    async function fetchData() {
+        try {
+            // Cena a historie pro RSI
+            const pRes = await fetch('https://min-api.cryptocompare.com/data/v2/histoday?fsym=BTC&tsym=USD&limit=30');
+            const pData = await pRes.json();
+            const history = pData.Data.Data;
+            const currentPrice = history[history.length - 1].close;
+            
+            // Fear and Greed Index
+            const fRes = await fetch('https://api.alternative.me/fng/');
+            const fData = await fRes.json();
+            const fng = parseInt(fData.data[0].value);
 
-    const box = document.getElementById('signal-box');
-    const ins = document.getElementById('instruction');
+            // Výpočet RSI (14)
+            let gains = 0, losses = 0;
+            for (let i = history.length - 14; i < history.length; i++) {
+                let diff = history[i].close - history[i-1].close;
+                if (diff > 0) gains += diff; else losses -= diff;
+            }
+            const rs = losses === 0 ? 100 : gains / losses;
+            const rsi = 100 - (100 / (1 + rs));
 
-    // Vylepšená logika signálu (RSI + F&G)
-    if (rsi < 35 || fng < 25) {
-        box.innerText = "BUY";
-        box.className = "buy-style";
-        ins.innerText = "Extrémní strach nebo přeprodáno. Historicky ideální pro nákup.";
-    } else if (rsi > 75 || fng > 80) {
-        box.innerText = "SELL";
-        box.className = "sell-style";
-        ins.innerText = "Trh je v euforii. Zvaž výběr zisků nebo stop-loss.";
-    } else {
-        box.innerText = "HOLD";
-        box.className = "hold-style";
-        ins.innerText = "Trh je v rovnováze. Pokračuj v pravidelné strategii.";
+            // SMA 20
+            const sma20 = history.slice(-20).reduce((a, b) => a + b.close, 0) / 20;
+
+            render(currentPrice, fng, rsi, sma20);
+        } catch (e) {
+            document.getElementById('instruction').innerText = "Chyba připojení k API.";
+        }
     }
-}
 
-fetchData();
+    function render(price, fng, rsi, sma) {
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+        
+        document.getElementById('price').innerText = `$${Math.round(price).toLocaleString()}`;
+        document.getElementById('fng').innerText = `${fng}/100`;
+        document.getElementById('rsi').innerText = Math.round(rsi);
+        document.getElementById('trend').innerText = price > sma ? "BULL" : "BEAR";
+
+        const box = document.getElementById('signal-box');
+        const ins = document.getElementById('instruction');
+
+        // Strategie: RSI pod 35 nebo FnG pod 25 je silný nákup
+        if (rsi < 35 || fng < 25) {
+            box.innerText = "BUY";
+            box.className = "buy-style";
+            ins.innerText = "Trh je v depresi. Ideální čas pro akumulaci pozice.";
+        } else if (rsi > 75 || fng > 82) {
+            box.innerText = "SELL";
+            box.className = "sell-style";
+            ins.innerText = "Extrémní euforie. Zvaž výběr části zisků.";
+        } else {
+            box.innerText = "HOLD";
+            box.className = "hold-style";
+            ins.innerText = "Trh je stabilní. Pokračuj v pravidelném DCA.";
+        }
+    }
+
+    // Inicializace
+    fetchData();
 </script>
+
 </body>
 </html>
